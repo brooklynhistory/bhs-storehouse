@@ -8,8 +8,19 @@ namespace BHS\Storehouse;
  * @since 1.0.0
  */
 class Record {
-	protected $field_map = array(
-
+	protected $post_field_map = array(
+		'description' => array(
+			'post_field' => 'post_content',
+		),
+		'title' => array(
+			'post_field' => 'post_title',
+		),
+		'subject' => array(
+			'taxonomy' => 'bhssh_subject',
+		),
+		'sterm' => array(
+			'taxonomy' => 'bhssh_sterms',
+		),
 	);
 
 	protected $fields = array();
