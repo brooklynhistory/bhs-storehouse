@@ -58,4 +58,22 @@ class Record {
 
 		return $generated;
 	}
+
+	/**
+	 * Generate multiples from a text blob.
+	 *
+	 * Used for things like 'subject'.
+	 *
+	 * Uses line breaks as delimiters. @todo is this reliable?
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	public function generate_multiples( $string ) {
+		$items = explode( "\n", $string );
+		$items = array_filter( $items );
+		$items = array_map( 'trim', $items );
+		return array_values( $items );
+	}
 }

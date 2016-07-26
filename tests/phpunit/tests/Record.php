@@ -101,4 +101,46 @@ This is a long second sentence.',
 
 		$this->assertSame( 'This is a long first sentence', $generated );
 	}
+
+	public function test_generate_multiples_should_explode_on_line_break() {
+		$string = "foo
+bar
+baz";
+
+		$r = new \BHS\Storehouse\Record();
+
+		$generated = $r->generate_multiples( $string );
+
+		$expected = array( 'foo', 'bar', 'baz' );
+
+		$this->assertSame( $expected, $generated );
+	}
+
+	public function test_generate_multiples_should_ignore_empty_lines() {
+		$string = "foo
+
+baz";
+
+		$r = new \BHS\Storehouse\Record();
+
+		$generated = $r->generate_multiples( $string );
+
+		$expected = array( 'foo', 'baz' );
+
+		$this->assertSame( $expected, $generated );
+	}
+
+	public function test_generate_multiples_should_trim_lines() {
+		$string = "foo
+  bar
+		baz	";
+
+		$r = new \BHS\Storehouse\Record();
+
+		$generated = $r->generate_multiples( $string );
+
+		$expected = array( 'foo', 'bar', 'baz' );
+
+		$this->assertSame( $expected, $generated );
+	}
 }
