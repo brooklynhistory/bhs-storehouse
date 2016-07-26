@@ -12,8 +12,23 @@ class Record {
 
 	);
 
+	protected $fields = array();
+
 	public function set_up_from_raw_atts( $atts ) {
+		$this->set( 'title', $this->generate_title( $atts ) );
 		return true;
+	}
+
+	public function set( $field, $value ) {
+		$this->fields[ $field ] = $value;
+	}
+
+	public function get( $field ) {
+		if ( isset( $this->fields[ $field ] ) ) {
+			return $this->fields[ $field ];
+		}
+
+		return null;
 	}
 
 	/**
