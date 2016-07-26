@@ -16,6 +16,15 @@ class Record {
 
 	public function set_up_from_raw_atts( $atts ) {
 		$this->set( 'title', $this->generate_title( $atts ) );
+
+		if ( isset( $atts['subjects'] ) ) {
+			$this->set( 'subject', $this->generate_multiples( $atts['subjects'] ) );
+		}
+
+		if ( isset( $atts['sterms'] ) ) {
+			$this->set( 'sterm', $this->generate_multiples( $atts['sterms'] ) );
+		}
+
 		return true;
 	}
 

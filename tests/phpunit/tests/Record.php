@@ -47,6 +47,8 @@ Marriage customs and rites',
 		$this->assertTrue( $record->set_up_from_raw_atts( $data ) );
 
 		$this->assertSame( 'Oral History Interview with Melinda Broman', $record->get( 'title' ) );
+		$this->assertSame( array( 'AIDS (Disease)', 'AIDS activists', 'Blood coagulation factors', 'Funeral rites and ceremonies', 'Hemophilia', 'Hemophiliacs', 'HIV infections', 'Immunological deficiency syndromes', 'Marriage customs and rites' ), $record->get( 'subject' ) );
+		$this->assertSame( array( 'Brooklyn (New York, N.Y.)', 'New York (N.Y.)' ), $record->get( 'sterm' ) );
 	}
 
 	public function test_generate_title_should_prefer_nonempty_title() {
