@@ -45,49 +45,59 @@ Marriage customs and rites',
 		);
 
 		$this->assertTrue( $record->set_up_from_raw_atts( $data ) );
+
+		$this->assertSame( 'Oral History Interview with Melinda Broman', $record->get( 'title' ) );
 	}
 
 	public function test_generate_title_should_prefer_nonempty_title() {
-		$title = 'Foo';
-		$description = 'Bar';
+		$atts = array(
+			'title' => 'Foo',
+			'descrip' => 'Bar',
+		);
 
 		$r = new \BHS\Storehouse\Record();
 
-		$generated = $r->generate_title( $title, $description );
+		$generated = $r->generate_title( $atts );
 
-		$this->assertSame( $title, $generated );
+		$this->assertSame( 'Foo', $generated );
 	}
 
 	public function test_generate_title_should_ignore_whitespace_title() {
-		$title = '   ';
-		$description = 'Bar';
+		$atts = array(
+			'title' => '   ',
+			'descrip' => 'Bar',
+		);
 
 		$r = new \BHS\Storehouse\Record();
 
-		$generated = $r->generate_title( $title, $description );
+		$generated = $r->generate_title( $atts );
 
-		$this->assertSame( $description, $generated );
+		$this->assertSame( 'Bar', $generated );
 	}
 
 	public function test_generate_title_should_take_first_sentence_of_description() {
-		$title = '';
-		$description = 'This is a long first sentence. This is a long second sentence.';
+		$atts = array(
+			'title' => '',
+			'descrip' => 'This is a long first sentence. This is a long second sentence.',
+		);
 
 		$r = new \BHS\Storehouse\Record();
 
-		$generated = $r->generate_title( $title, $description );
+		$generated = $r->generate_title( $atts );
 
 		$this->assertSame( 'This is a long first sentence', $generated );
 	}
 
 	public function test_generate_title_should_take_first_line_of_description() {
-		$title = '';
-		$description = 'This is a long first sentence
-This is a long second sentence.';
+		$atts = array(
+			'title' => '',
+			'descrip' => 'This is a long first sentence
+This is a long second sentence.',
+		);
 
 		$r = new \BHS\Storehouse\Record();
 
-		$generated = $r->generate_title( $title, $description );
+		$generated = $r->generate_title( $atts );
 
 		$this->assertSame( 'This is a long first sentence', $generated );
 	}

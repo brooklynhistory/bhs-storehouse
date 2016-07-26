@@ -22,8 +22,16 @@ class Record {
 	 * If a non-empty title value is provided, it'll be used. Otherwise, we
 	 * try to get something meaningful out of the description.
 	 */
-	public function generate_title( $title, $description ) {
-		$title = trim( $title );
+	public function generate_title( $atts ) {
+		$title = $description = '';
+
+		if ( isset( $atts['title'] ) ) {
+			$title = trim( $atts['title'] );
+		}
+
+		if ( isset( $atts['descrip'] ) ) {
+			$description = trim( $atts['descrip'] );
+		}
 
 		if ( $title ) {
 			return $title;
