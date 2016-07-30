@@ -48,6 +48,7 @@ class Record {
 		return $value;
 	}
 
+	// @todo - existing vs new - use 'identifier'
 	public function save() {
 		// Build post data for WP.
 		$post_data = array(
@@ -68,6 +69,9 @@ class Record {
 
 		// post_content is 'description'.
 		$post_data['post_content'] = $this->get_dc_metadata( 'description' );
+
+		// post_name is a URL-safe version of the identifier.
+		$post_data['post_name'] = sanitize_title( $this->get_dc_metadata( 'identifier' ) );
 
 		$post_id = wp_insert_post( $post_data );
 

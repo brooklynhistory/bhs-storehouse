@@ -68,6 +68,19 @@ The AIDS/Brooklyn Oral History Project collection includes oral histories conduc
 		$this->assertSame( $expected, $post->post_content );
 	}
 
+	public function test_save_should_create_post_name_from_identifier() {
+		$record = new BHS\Storehouse\Record();
+		$record->set_up_from_raw_atts( $this->data );
+
+		$post_id = $record->save();
+
+		$post = get_post( $post_id );
+
+		$expected = sanitize_title( $this->data['identifier'][0] );
+
+		$this->assertSame( $expected, $post->post_name );
+	}
+
 	public function test_save_should_create_subject_terms() {
 		$record = new BHS\Storehouse\Record();
 		$record->set_up_from_raw_atts( $this->data );
