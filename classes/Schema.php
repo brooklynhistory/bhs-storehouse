@@ -15,6 +15,7 @@ class Schema {
 	 */
 	public function set_up_hooks() {
 		add_action( 'init', array( $this, 'register_post_types' ) );
+		add_action( 'init', array( $this, 'register_taxonomies' ), 12 );
 	}
 
 	/**
@@ -41,6 +42,19 @@ class Schema {
 			),
 			'menu_icon' => 'dashicons-book-alt',
 			'public' => true,
+		) );
+	}
+
+	/**
+	 * Register taxonomies.
+	 *
+	 * - bhssh_subject is 'dc:subject'.
+	 *
+	 * @since 1.0.0
+	 */
+	public function register_taxonomies() {
+		register_taxonomy( 'bhssh_subject', 'bhssh_record', array(
+			'public' => false,
 		) );
 	}
 }

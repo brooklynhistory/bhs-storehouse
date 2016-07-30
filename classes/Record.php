@@ -8,92 +8,109 @@ namespace BHS\Storehouse;
  * @since 1.0.0
  */
 class Record {
-	protected $post_field_map = array(
-		'description' => array(
-			'post_field' => 'post_content',
-		),
-		'title' => array(
-			'post_field' => 'post_title',
-		),
-		'subject' => array(
-			'taxonomy' => 'bhssh_subject',
-		),
-		'sterm' => array(
-			'taxonomy' => 'bhssh_sterms',
-		),
+	protected $dc_elements = array(
+		'contributor', 'coverage', 'creator', 'date', 'description',
+		'format', 'identifier', 'language', 'publisher', 'relation',
+		'rights', 'source', 'subject', 'title', 'type',
 	);
 
-	protected $fields = array();
+	protected $dc_metadata = array();
+
+	protected $post;
+
+	public function __construct( $post_id = null ) {
+		if ( $post_id ) {
+			$this->populate( $post_id );
+		}
+	}
 
 	public function set_up_from_raw_atts( $atts ) {
-		$this->set( 'title', $this->generate_title( $atts ) );
-
-		if ( isset( $atts['subjects'] ) ) {
-			$this->set( 'subject', $this->generate_multiples( $atts['subjects'] ) );
-		}
-
-		if ( isset( $atts['sterms'] ) ) {
-			$this->set( 'sterm', $this->generate_multiples( $atts['sterms'] ) );
+		foreach ( $atts as $att_type => $att ) {
+			if ( in_array( $att_type, $this->dc_elements ) ) {
+				$this->dc_metadata[ $att_type ] = $att;
+			}
 		}
 
 		return true;
 	}
 
-	public function set( $field, $value ) {
-		$this->fields[ $field ] = $value;
-	}
-
-	public function get( $field ) {
-		if ( isset( $this->fields[ $field ] ) ) {
-			return $this->fields[ $field ];
+	public function get_dc_metadata( $field, $single = true ) {
+		if ( isset( $this->dc_metadata[ $field ] ) ) {
+			$value = $this->dc_metadata[ $field ];
+		} else {
+			$value = $single ? '' : array();
 		}
 
-		return null;
+		if ( $single && is_array( $value ) ) {
+			$value = reset( $value );
+		}
+
+		return $value;
+	}
+
+	public function save() {
+		// Build post data for WP.
+		$post_data = array(
+			'post_type' => 'bhssh_record',
+			'post_status' => 'publish',
+		);
+
+		// post_title is a combination of identifier + title.
+		if ( $this->get_dc_metadata( 'title' ) ) {
+			$post_data['post_title'] = sprintf(
+				'%s - %s',
+				$this->get_dc_metadata( 'identifier' ),
+				$this->get_dc_metadata( 'title' )
+			);
+		} else {
+			$post_data['post_title'] = $this->get_dc_metadata( 'identifier' );
+		}
+
+		// post_content is 'description'.
+		$post_data['post_content'] = $this->get_dc_metadata( 'description' );
+
+		$post_id = wp_insert_post( $post_data );
+
+		if ( $post_id ) {
+			wp_set_object_terms( $post_id, $this->get_dc_metadata( 'subject', false ), 'bhssh_subject' );
+
+			foreach ( $this->dc_metadata as $dc_key => $_ ) {
+				$meta_key = 'bhs_dc_' . $dc_key;
+
+				// Delete existing keys, in case of update.
+				delete_post_meta( $post_id, $meta_key );
+
+				// Note: 'subject' is being added here as well as in a taxonomy.
+				foreach ( $this->get_dc_metadata( $dc_key, false ) as $value ) {
+					add_post_meta( $post_id, $meta_key, $value );
+				}
+			}
+
+			$this->populate( $post_id );
+		}
+
+		return $post_id;
 	}
 
 	/**
-	 * Generates a title for the record.
-	 *
-	 * If a non-empty title value is provided, it'll be used. Otherwise, we
-	 * try to get something meaningful out of the description.
-	 */
-	public function generate_title( $atts ) {
-		$title = $description = '';
-
-		if ( isset( $atts['title'] ) ) {
-			$title = trim( $atts['title'] );
-		}
-
-		if ( isset( $atts['descrip'] ) ) {
-			$description = trim( $atts['descrip'] );
-		}
-
-		if ( $title ) {
-			return $title;
-		}
-
-		$lines = explode( "\n", $description );
-		$parts = explode( ". ", $lines[0] );
-		$generated = $parts[0];
-
-		return $generated;
-	}
-
-	/**
-	 * Generate multiples from a text blob.
-	 *
-	 * Used for things like 'subject'.
-	 *
-	 * Uses line breaks as delimiters. @todo is this reliable?
+	 * Populate object from database ID.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return array
+	 * @param int $post_id
 	 */
-	public function generate_multiples( $string ) {
-		$items = explode( "\n", $string );
-		$items = array_filter( $items );
-		$items = array_map( 'trim', $items );
-		return array_values( $items );
+	protected function populate( $post_id ) {
+		$post = get_post( $post_id );
+
+		if ( ! $post || 'bhssh_record' !== $post->post_type ) {
+			return;
+		}
+
+		$this->post = $post;
+
+		foreach ( $this->dc_elements as $element ) {
+			$values = get_post_meta( $post_id, 'bhs_dc_' . $element );
+			$this->dc_metadata[ $element ] = $values;
+		}
 	}
 }
