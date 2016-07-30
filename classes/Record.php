@@ -48,13 +48,31 @@ class Record {
 		return $value;
 	}
 
-	// @todo - existing vs new - use 'identifier'
+	public function set_dc_metadata( $field, $value ) {
+		$this->dc_metadata[ $field ] = $value;
+	}
+
 	public function save() {
-		// Build post data for WP.
-		$post_data = array(
-			'post_type' => 'bhssh_record',
-			'post_status' => 'publish',
-		);
+		// Determine whether this is a new or existing record.
+		$identifier = $this->get_dc_metadata( 'identifier' );
+		$post_id = null;
+		$is_new = true;
+		if ( $identifier ) {
+			$post_id = $this->get_post_id_by_identifier( $identifier );
+		}
+
+		if ( $post_id ) {
+			$post_data = array(
+				'ID' => $post_id,
+			);
+			$is_new = false;
+		} else {
+			// Build post data for WP.
+			$post_data = array(
+				'post_type' => 'bhssh_record',
+				'post_status' => 'publish',
+			);
+		}
 
 		// post_title is a combination of identifier + title.
 		if ( $this->get_dc_metadata( 'title' ) ) {
@@ -91,6 +109,27 @@ class Record {
 			}
 
 			$this->populate( $post_id );
+		}
+
+		return $post_id;
+	}
+
+	public function get_post_id_by_identifier( $identifier ) {
+		$found = get_posts( array(
+			'posts_per_page' => 1,
+			'post_type' => 'bhssh_record',
+			'meta_query' => array(
+				array(
+					'key' => 'bhs_dc_identifier',
+					'value' => $identifier,
+				),
+			),
+			'fields' => 'ids',
+		) );
+
+		$post_id = null;
+		if ( $found ) {
+			$post_id = reset( $found );
 		}
 
 		return $post_id;

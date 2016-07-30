@@ -42,6 +42,20 @@ The AIDS/Brooklyn Oral History Project collection includes oral histories conduc
 		$this->assertInternalType( 'int', $found );
 	}
 
+	public function test_save_should_not_create_new_object_for_same_identifier() {
+		$identifier = 'foo';
+
+		$r1 = new BHS\Storehouse\Record();
+		$r1->set_dc_metadata( 'identifier', array( $identifier ) );
+		$p1 = $r1->save();
+
+		$r2 = new BHS\Storehouse\Record();
+		$r2->set_dc_metadata( 'identifier', array( $identifier ) );
+		$p2 = $r2->save();
+
+		$this->assertSame( $p1, $p2 );
+	}
+
 	public function test_save_should_create_post_title() {
 		$record = new BHS\Storehouse\Record();
 		$record->set_up_from_raw_atts( $this->data );
@@ -109,5 +123,17 @@ The AIDS/Brooklyn Oral History Project collection includes oral histories conduc
 		foreach ( $this->data as $k => $v ) {
 			$this->assertEqualSets( $v, $r2->get_dc_metadata( $k, false ) );
 		}
+	}
+
+	public function get_post_id_by_identifier() {
+		$identifier = 'foo';
+
+		$record = new BHS\Storehouse\Record();
+		$record->set_dc_metadata( 'identifier', 'foo' );
+		$post_id = $record->save();
+
+		$r = new BHS\Storehouse\Record();
+		$found = $r->get_post_id_by_identifier( $identifier );
+		$this->assertSame( $post_id, $found );
 	}
 }
