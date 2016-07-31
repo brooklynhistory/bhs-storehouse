@@ -8,7 +8,7 @@ namespace BHS\Storehouse;
  * @since 1.0.0
  */
 class Record {
-	protected $dc_elements = array(
+	protected static $dc_elements = array(
 		'contributor', 'coverage', 'creator', 'date', 'description',
 		'format', 'identifier', 'language', 'publisher', 'relation',
 		'rights', 'source', 'subject', 'title', 'type',
@@ -25,8 +25,9 @@ class Record {
 	}
 
 	public function set_up_from_raw_atts( $atts ) {
+		$dc_elements = self::get_dc_elements();
 		foreach ( $atts as $att_type => $att ) {
-			if ( in_array( $att_type, $this->dc_elements ) ) {
+			if ( in_array( $att_type, $dc_elements ) ) {
 				$this->dc_metadata[ $att_type ] = $att;
 			}
 		}
@@ -151,9 +152,13 @@ class Record {
 
 		$this->post = $post;
 
-		foreach ( $this->dc_elements as $element ) {
+		foreach ( self::get_dc_elements() as $element ) {
 			$values = get_post_meta( $post_id, 'bhs_dc_' . $element );
 			$this->dc_metadata[ $element ] = $values;
 		}
+	}
+
+	public static function get_dc_elements() {
+		return self::$dc_elements;
 	}
 }
