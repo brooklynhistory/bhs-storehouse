@@ -15,6 +15,7 @@ class Admin {
 	 */
 	public function set_up_hooks() {
 		add_action( 'admin_menu', array( $this, 'route_admin_load' ) );
+		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 	}
 
 	/**
@@ -195,5 +196,35 @@ class Admin {
 		update_option( 'bhs_import_results_' . $time, $results );
 
 		return $time;
+	}
+
+	public function add_meta_boxes() {
+		add_meta_box(
+			'bhs-dc-metadata',
+			__( 'Dublin Core Metadata', 'bhs-storehouse' ),
+			array( $this, 'render_meta_box' ),
+			'bhssh_record'
+		);
+	}
+
+	public function render_meta_box( $post ) {
+		echo '<table class="form-table">';
+		foreach ( Record::get_dc_elements() as $element ) {
+			$values = get_post_meta( $post->ID, 'bhs_dc_' . $element );
+			$values_formatted = array();
+			foreach ( $values as $value ) {
+				$values_formatted[] = '<p>' . esc_html( $value ) . '</p>';
+			}
+
+			printf(
+				'<tr>
+				  <th scope="row">%s</th>
+				  <td>%s</td>
+				</tr>',
+				esc_html( $element ),
+				implode( "\n", $values_formatted )
+			);
+		}
+		echo '</table>';
 	}
 }
