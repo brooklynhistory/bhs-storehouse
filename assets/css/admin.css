@@ -7,3 +7,15 @@
 	background: #fff;
 	margin-top: 2em;
 }
+
+.bhs-import-record-status {
+	font-weight: bold;
+}
+
+.bhs-import-record-success {
+	color: #00b159;
+}
+
+.bhs-import-record-failure {
+	color: #d11141;
+}
