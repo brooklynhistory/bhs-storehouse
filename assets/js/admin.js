@@ -1,5 +1,5 @@
 ( function( $ ) {
-	var $errorDiv, $progressbar, $successDiv;
+	var $errorDiv, $progressbar, $successDiv, $successMessageDiv;
 
 	handleError = function( message ) {
 		$successDiv.hide();
@@ -34,7 +34,7 @@
 					if ( response.data.pct < 100 ) {
 						importChunk( response.data.run );
 					} else {
-						$successDiv.append( '<p>Complete!</p>' );
+						$successMessageDiv.append( '<p>Complete!</p>' );
 					}
 				} else {
 					// todo
@@ -70,12 +70,15 @@
 			html += '<br />';
 		}
 
-		$successDiv.append( html );
+		$successMessageDiv.append( html ).animate({
+			scrollTop: $successMessageDiv.prop( 'scrollHeight' )
+		}, 500);
 	}
 
 	$(document).ready( function() {
 		$errorDiv = $( '#bhs-error' );
 		$successDiv = $( '#bhs-success' );
+		$successMessageDiv = $( '#bhs-import-message' );
 
 		$('#bhs-import-submit').click( function(e) {
 			e.preventDefault();

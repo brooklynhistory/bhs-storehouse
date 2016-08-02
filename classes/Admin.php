@@ -28,6 +28,13 @@ class Admin {
 			array(),
 			BHSSH_VERSION
 		);
+
+		wp_register_style(
+			'bhssh_admin',
+			BHSSH_PLUGIN_URL . 'assets/css/admin.css',
+			array(),
+			BHSSH_VERSION
+		);
 	}
 
 	/**
@@ -86,6 +93,7 @@ class Admin {
 	public function render_import_page() {
 		wp_enqueue_script( 'bhssh_admin' );
 		wp_enqueue_style( 'bhs-jquery-ui-progressbar' );
+		wp_enqueue_style( 'bhssh_admin' );
 
 		$results_key = isset( $_GET['results_key'] ) ? urldecode( $_GET['results_key'] ) : null;
 		$results = null;

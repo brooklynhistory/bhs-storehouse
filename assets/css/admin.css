@@ -1,0 +1,9 @@
+#bhs-import-message {
+	width: 50%;
+	height: 400px;
+	border: 2px solid #aaa;
+	padding: 5px;
+	overflow: scroll;
+	background: #fff;
+	margin-top: 2em;
+}
