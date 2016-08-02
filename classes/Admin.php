@@ -348,9 +348,8 @@ class Admin {
 
 		$results = array();
 		$current = 0;
-		$increment = 1;
+		$increment = 5;
 
-		_b( 'start loop with last ' . $last );
 		while ( 'dc-record' === $x->name ) {
 			if ( $current >= ( $last + $increment ) ) {
 				break;
