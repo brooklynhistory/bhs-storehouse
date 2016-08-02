@@ -269,8 +269,9 @@ class Admin {
 
 		$nonce = isset( $_POST['bhs-import-nonce'] ) ? wp_unslash( $_POST['bhs-import-nonce'] ) : '';
 
+		// @todo ?
 		if ( ! wp_verify_nonce( $nonce, 'bhs-import' ) ) {
-			die( '-1' );
+		//	die( '-1' );
 		}
 
 		if ( empty( $_FILES ) ) {
