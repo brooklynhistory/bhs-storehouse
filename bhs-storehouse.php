@@ -11,6 +11,9 @@
  * @package bhs-storehouse
  */
 
+define( 'BHSSH_VERSION', '0.1-alpha' );
+define( 'BHSSH_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+
 /**
  * Bootstraps the plugin.
  *

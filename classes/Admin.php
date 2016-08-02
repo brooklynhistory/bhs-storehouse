@@ -9,6 +9,28 @@ namespace BHS\Storehouse;
  */
 class Admin {
 	/**
+	 * Register CSS and JS assets.
+	 *
+	 * @since 1.0.0
+	 */
+	public function register_assets() {
+		wp_register_script(
+			'bhssh_admin',
+			BHSSH_PLUGIN_URL . 'assets/js/admin.js',
+			array( 'jquery', 'jquery-ui-progressbar' ),
+			BHSSH_VERSION,
+			true
+		);
+
+		wp_register_style(
+			'bhs-jquery-ui-progressbar',
+			BHSSH_PLUGIN_URL . 'assets/css/jquery-ui.min.css',
+			array(),
+			BHSSH_VERSION
+		);
+	}
+
+	/**
 	 * Hook into WP.
 	 *
 	 * @since 1.0.0
@@ -16,6 +38,9 @@ class Admin {
 	public function set_up_hooks() {
 		add_action( 'admin_menu', array( $this, 'route_admin_load' ) );
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'register_assets' ) );
+		add_action( 'wp_ajax_bhssh_import_upload', array( $this, 'process_ajax_submit' ) );
+		add_action( 'wp_ajax_bhssh_import_chunk', array( $this, 'process_ajax_chunk' ) );
 	}
 
 	/**
@@ -59,6 +84,9 @@ class Admin {
 	 * @since 1.0.0
 	 */
 	public function render_import_page() {
+		wp_enqueue_script( 'bhssh_admin' );
+		wp_enqueue_style( 'bhs-jquery-ui-progressbar' );
+
 		$results_key = isset( $_GET['results_key'] ) ? urldecode( $_GET['results_key'] ) : null;
 		$results = null;
 		if ( $results_key ) {
@@ -118,11 +146,17 @@ class Admin {
 			<?php else : ?>
 				<form action="" method="post" enctype="multipart/form-data">
 					<p><?php esc_html_e( 'Upload a PastPerfect-generated XML file to begin the import process.', 'bhs-storehouse' ); ?></p>
-					<input accept="xml" type="file" name="bhs-xml" />
+					<input type="file" name="bhs-xml" id="bhs-xml" />
 
 					<p class="submit">
-						<input type="submit" class="button button-secondary" value="<?php esc_attr_e( 'Begin Import', 'bhs-storehouse' ); ?>" />
+						<input type="submit" id="bhs-import-submit" class="button button-secondary" value="<?php esc_attr_e( 'Begin Import', 'bhs-storehouse' ); ?>" />
 					</p>
+
+					<div id="bhs-error" style="display: none;"></div>
+					<div id="bhs-success" style="display: none;">
+						<div id="bhs-import-progressbar"></div>
+						<div id="bhs-import-message"></div>
+					</div>
 
 					<?php wp_nonce_field( 'bhs-import', 'bhs-import-nonce', false ); ?>
 				</form>
@@ -226,5 +260,156 @@ class Admin {
 			);
 		}
 		echo '</table>';
+	}
+
+	public function process_ajax_submit() {
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			die( '-1' );
+		}
+
+		$nonce = isset( $_POST['bhs-import-nonce'] ) ? wp_unslash( $_POST['bhs-import-nonce'] ) : '';
+
+		if ( ! wp_verify_nonce( $nonce, 'bhs-import' ) ) {
+			die( '-1' );
+		}
+
+		if ( empty( $_FILES ) ) {
+			wp_send_json_error( __( 'File could not be uploaded. Check the "post_max_size" directive in php.ini.', 'bhs-storehouse' ) );
+		}
+
+		if ( empty( $_FILES['file-0']['tmp_name'] ) ) {
+			wp_send_json_error( __( 'File could not be uploaded. Check the "upload_max_filesize" directive in php.ini.', 'bhs-storehouse' ) );
+		}
+
+		// @todo filetypes?
+
+		$uploads = wp_upload_dir();
+		$timestamp = time();
+		$dest = $uploads['basedir'] . '/bhs-import-' . $timestamp . '.xml';
+
+		$moved = move_uploaded_file( $_FILES['file-0']['tmp_name'], $dest );
+		if ( ! $moved ) {
+			wp_send_json_error( __( 'File could not be uploaded.', 'bhs-storehouse' ) );
+		}
+
+		$x = new \XMLReader();
+		$x->open( $dest );
+		$doc = new \DOMDocument;
+
+		// Move to the first dc-record node.
+		while ( $x->read() && 'dc-record' !== $x->name );
+
+		$count = 0;
+		while ( 'dc-record' === $x->name ) {
+			$count++;
+			$x->next( 'dc-record' );
+		}
+
+		$run_key = 'bhs_import_run_' . $timestamp;
+		$run_data = array(
+			'xml' => $dest,
+			'last' => 0,
+			'count' => $count,
+		);
+		update_option( $run_key, $run_data );
+
+		$retval = array(
+			'run' => $timestamp,
+			'pct' => 0,
+		);
+
+		wp_send_json_success( $retval );
+	}
+
+	public function process_ajax_chunk() {
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			die( '-1' );
+		}
+
+		// @todo nonce
+
+		$run = isset( $_POST['run'] ) ? wp_unslash( $_POST['run'] ) : '';
+		$run_key = 'bhs_import_run_' . $run;
+		$run_data = get_option( $run_key );
+		if ( ! $run || ! $run_data ) {
+			wp_send_json_error( __( 'Could not find uploaded XML file. Please upload again.', 'bhs-storehouse' ) );
+		}
+
+		$last = $run_data['last'];
+
+		$x = new \XMLReader();
+		$x->open( $run_data['xml'] );
+
+		$doc = new \DOMDocument;
+
+		// Move to the first dc-record node.
+		while ( $x->read() && 'dc-record' !== $x->name );
+
+		$results = array();
+		$current = 0;
+		$increment = 1;
+
+		_b( 'start loop with last ' . $last );
+		while ( 'dc-record' === $x->name ) {
+			if ( $current >= ( $last + $increment ) ) {
+				break;
+			}
+
+			$current++;
+
+			if ( $current <= $last ) {
+				$x->next( 'dc-record' );
+				continue;
+			}
+
+			$node = simplexml_import_dom( $doc->importNode( $x->expand(), true ) );
+			$atts = array();
+			$id = '';
+			foreach ( $node->children() as $a => $b ) {
+				if ( 'identifier' === $a && ! $id ) {
+					$id = (string) $b;
+				}
+
+				$atts[ $a ][] = (string) $b;
+			}
+
+			$record = new Record();
+
+			$exists = (bool) $record->get_post_id_by_identifier( $id );
+
+			$record->set_up_from_raw_atts( $atts );
+
+			$saved = $record->save();
+
+			$result = array(
+				'identifer' => $id,
+				'status' => '',
+			);
+
+			if ( $saved ) {
+				if ( $exists ) {
+					$result['status'] = 'updated';
+				} else {
+					$result['status'] = 'created';
+				}
+			} else {
+				$result['status'] = 'failed';
+			}
+
+			$results[] = $result;
+
+			$x->next( 'dc-record' );
+		}
+
+		$run_data['last'] = $current;
+		update_option( $run_key, $run_data );
+
+		$retval = array(
+			'run' => $run,
+			'pct' => floor( 100 * ( $current / $run_data['count'] ) ),
+			'results' => $results,
+		);
+
+		wp_send_json_success( $retval );
 	}
 }
