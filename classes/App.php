@@ -11,5 +11,8 @@ class App {
 
 		$schema = new Schema();
 		$schema->set_up_hooks();
+
+		$endpoint = new Endpoint();
+		$endpoint->set_up_hooks();
 	}
 }

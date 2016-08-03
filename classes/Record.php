@@ -161,4 +161,13 @@ class Record {
 	public static function get_dc_elements() {
 		return self::$dc_elements;
 	}
+
+	public function format_for_endpoint() {
+		$dc_metadata = array();
+		foreach ( self::get_dc_elements() as $dc_element ) {
+			$dc_metadata[ $dc_element ] = $this->get_dc_metadata( $dc_element, false );
+		}
+
+		return $dc_metadata;
+	}
 }
