@@ -378,7 +378,15 @@ class Admin {
 					$id = (string) $b;
 				}
 
-				$atts[ $a ][] = (string) $b;
+				$children = $b->children();
+				if ( $children ) {
+					$value = array();
+					foreach ( $children as $ck => $cv ) {
+						$atts[ $a ][ $ck ][] = (string) $cv;
+					}
+				} else {
+					$atts[ $a ][] = (string) $b;
+				}
 			}
 
 			$record = new Record();

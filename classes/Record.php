@@ -105,7 +105,7 @@ class Record {
 
 				// Note: 'subject' is being added here as well as in a taxonomy.
 				foreach ( $this->get_dc_metadata( $dc_key, false ) as $value ) {
-					add_post_meta( $post_id, $meta_key, $value );
+					add_post_meta( $post_id, $meta_key, $this->addslashes_deep( $value ) );
 				}
 			}
 
@@ -164,10 +164,25 @@ class Record {
 
 	public function format_for_endpoint() {
 		$dc_metadata = array();
+		// @todo Should some of these be flattened?
 		foreach ( self::get_dc_elements() as $dc_element ) {
 			$dc_metadata[ $dc_element ] = $this->get_dc_metadata( $dc_element, false );
 		}
 
 		return $dc_metadata;
+	}
+
+	public function addslashes_deep( $value ) {
+		if ( is_array( $value ) ) {
+			return array_map( array( $this, 'addslashes_deep' ), $value );
+		} elseif ( is_object( $value ) ) {
+			$vars = get_object_vars( $value );
+			foreach ( $vars as $key => $data ) {
+				$value->{$key} = $this->addslashes_deep( $data );
+			}
+			return $value;
+		}
+
+		return addslashes( $value );
 	}
 }

@@ -21,6 +21,18 @@ The AIDS/Brooklyn Oral History Project collection includes oral histories conduc
 		'coverage' => array( '1992 - 1992' ),
 		'coverage' => array( 'Interview place:Brooklyn, New York, N.Y.' ),
 		'rights' => array( 'Access is available onsite at Brooklyn Historical Society&apos;s Othmer Library and the Oral History Portal. Use of oral histories other than for private study, scholarship, or research requires permission from BHS by contacting library@brooklynhistory.org.' ),
+		'relation' => array(
+			'relation_findingaid' => array(
+				'http://example.com/findingaid.xml',
+			),
+			'relation_ohms' => array(
+				'OHMS link',
+			),
+			'relation_image' => array(
+				'dir\img1.jpg',
+				'dir\img2.jpg',
+			),
+		),
 	);
 
 	public function test_set_up_from_raw_atts() {
