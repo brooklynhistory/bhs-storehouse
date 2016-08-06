@@ -47,14 +47,14 @@ class Endpoint {
 		$params = $request->get_params();
 
 		if ( ! isset( $params['identifier'] ) ) {
-			return new WP_Error( 'bhs_no_identifier', 'No identifier provided.', array( 'status' => 404 ) );
+			return new \WP_Error( 'bhs_no_identifier', 'No identifier provided.', array( 'status' => 404 ) );
 		}
 
 		$r = new Record();
 		$record_id = $r->get_post_id_by_identifier( $params['identifier'] );
 
 		if ( ! $record_id ) {
-			return new WP_Error( 'bhs_no_identifier', 'No record found matching that identifier.', array( 'status' => 404 ) );
+			return new \WP_Error( 'bhs_no_identifier', 'No record found matching that identifier.', array( 'status' => 404 ) );
 		}
 
 		$record = new Record( $record_id );
