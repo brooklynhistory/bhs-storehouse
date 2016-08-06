@@ -65,6 +65,7 @@ class Record {
 		if ( $post_id ) {
 			$post_data = array(
 				'ID' => $post_id,
+				'post_type' => 'bhssh_record',
 			);
 			$is_new = false;
 		} else {
@@ -119,6 +120,7 @@ class Record {
 		$found = get_posts( array(
 			'posts_per_page' => 1,
 			'post_type' => 'bhssh_record',
+			'post_status' => 'any',
 			'meta_query' => array(
 				array(
 					'key' => 'bhs_dc_identifier',
