@@ -10,7 +10,8 @@ namespace BHS\Storehouse;
 class Record {
 	protected static $dc_elements = array(
 		'contributor', 'coverage', 'creator', 'date', 'description',
-		'format', 'identifier', 'language', 'publisher', 'relation',
+		'format', 'identifier', 'language', 'publisher',
+		'relation_findingaid', 'relation_ohms', 'relation_image',
 		'rights', 'source', 'subject', 'title', 'type',
 	);
 
@@ -29,6 +30,10 @@ class Record {
 		foreach ( $atts as $att_type => $att ) {
 			if ( in_array( $att_type, $dc_elements ) ) {
 				$this->dc_metadata[ $att_type ] = $att;
+			} elseif ( 'relation' === $att_type ) {
+				foreach ( $att as $subatt_key => $subatt_value ) {
+					$this->dc_metadata[ $subatt_key ] = $subatt_value;
+				}
 			}
 		}
 

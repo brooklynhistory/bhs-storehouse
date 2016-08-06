@@ -251,11 +251,25 @@ class Admin {
 
 	public function render_meta_box( $post ) {
 		echo '<table class="form-table">';
+		$record = new Record( $post->ID );
 		foreach ( Record::get_dc_elements() as $element ) {
-			$values = get_post_meta( $post->ID, 'bhs_dc_' . $element );
+			$all_values = $record->get_dc_metadata( $element, false );
 			$values_formatted = array();
-			foreach ( $values as $value ) {
-				$values_formatted[] = '<p>' . esc_html( $value ) . '</p>';
+			foreach ( $all_values as $key => $value ) {
+				if ( is_array( $value ) ) {
+					$this_item = '<dl>';
+					$this_item .= sprintf(
+						'<dt>%s</dt><dd>%s</dd>',
+						esc_html( $key ),
+						implode( "\n", array_map( esc_html( $value ) ) )
+					);
+
+					$this_item .= '</dl>';
+
+					$values_formatted[] = '<p>' . $this_item . '</p>';
+				} else {
+					$values_formatted[] = '<p>' . esc_html( $value ) . '</p>';
+				}
 			}
 
 			printf(
