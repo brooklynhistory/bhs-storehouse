@@ -42,6 +42,7 @@ class Schema {
 			),
 			'menu_icon' => 'dashicons-book-alt',
 			'public' => true,
+			'supports' => array( 'title' ),
 		) );
 	}
 
