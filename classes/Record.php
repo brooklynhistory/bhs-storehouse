@@ -17,6 +17,8 @@ class Record {
 
 	protected $dc_metadata = array();
 
+	protected $asset_base = 'http://brooklynhistory.org/wordpress-assets/';
+
 	protected $post;
 
 	public function __construct( $post_id = null ) {
@@ -171,12 +173,30 @@ class Record {
 
 	public function format_for_endpoint() {
 		$dc_metadata = array();
+		$relation_fields = array( 'relation_findingaid', 'relation_ohms', 'relation_image' );
+
 		// @todo Should some of these be flattened?
 		foreach ( self::get_dc_elements() as $dc_element ) {
-			$dc_metadata[ $dc_element ] = $this->get_dc_metadata( $dc_element, false );
+			$value = $this->get_dc_metadata( $dc_element, false );
+
+			if ( in_array( $dc_element, $relation_fields, true ) ) {
+				if ( 'relation_image' === $dc_element ) {
+					$value = array_map( array( $this, 'convert_filename_to_asset_path' ), $value );
+				}
+
+				$dc_metadata['relation'][ $dc_element ] = $value;
+			} else {
+				$dc_metadata[ $dc_element ] = $value;
+			}
 		}
 
 		return $dc_metadata;
+	}
+
+	public function convert_filename_to_asset_path( $value ) {
+		$value = str_replace( '\\', '/', $value );
+		$value = trailingslashit( $this->asset_base ) . $value;
+		return $value;
 	}
 
 	public function addslashes_deep( $value ) {

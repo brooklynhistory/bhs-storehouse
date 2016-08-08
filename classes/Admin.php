@@ -268,7 +268,18 @@ class Admin {
 
 					$values_formatted[] = '<p>' . $this_item . '</p>';
 				} else {
-					$values_formatted[] = '<p>' . esc_html( $value ) . '</p>';
+					if ( 'relation_image' === $element ) {
+						$value = $record->convert_filename_to_asset_path( $value );
+						$value = sprintf(
+							'<img class="bhs-image-preview" src="%s" /><p>%s</p>',
+							esc_url( $value ),
+							esc_url( $value )
+						);
+					} else {
+						$value = esc_html( $value );
+					}
+
+					$values_formatted[] = '<p>' . $value . '</p>';
 				}
 			}
 
