@@ -72,7 +72,6 @@ class Record {
 		if ( $post_id ) {
 			$post_data = array(
 				'ID' => $post_id,
-				'post_type' => 'bhssh_record',
 			);
 			$is_new = false;
 		} else {
@@ -100,7 +99,11 @@ class Record {
 		// post_name is a URL-safe version of the identifier.
 		$post_data['post_name'] = sanitize_title( $this->get_dc_metadata( 'identifier' ) );
 
-		$post_id = wp_insert_post( $post_data );
+		if ( $is_new ) {
+			$post_id = wp_insert_post( $post_data );
+		} else {
+			$post_id = wp_update_post( $post_data );
+		}
 
 		if ( $post_id ) {
 			wp_set_object_terms( $post_id, $this->get_dc_metadata( 'subject', false ), 'bhssh_subject' );
