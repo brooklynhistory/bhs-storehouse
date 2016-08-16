@@ -202,6 +202,8 @@ class Admin {
 		// Move to the first dc-record node.
 		while ( $x->read() && 'dc-record' !== $x->name );
 
+		$singular_elements = Record::get_singular_elements();
+
 		while ( 'dc-record' === $x->name ) {
 			$node = simplexml_import_dom( $doc->importNode( $x->expand(), true ) );
 			$atts = array();
@@ -211,7 +213,11 @@ class Admin {
 					$id = (string) $b;
 				}
 
-				$atts[ $a ][] = (string) $b;
+				if ( in_array( $a, $singular_elements, true ) ) {
+					$atts[ $a ] = (string) $b;
+				} else {
+					$atts[ $a ][] = (string) $b;
+				}
 			}
 
 			$record = new Record();
@@ -255,7 +261,7 @@ class Admin {
 		foreach ( Record::get_dc_elements() as $element ) {
 			$all_values = $record->get_dc_metadata( $element, false );
 			$values_formatted = array();
-			foreach ( $all_values as $key => $value ) {
+			foreach ( (array) $all_values as $key => $value ) {
 				if ( is_array( $value ) ) {
 					$this_item = '<dl>';
 					$this_item .= sprintf(

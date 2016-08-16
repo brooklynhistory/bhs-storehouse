@@ -3,7 +3,7 @@
 class BHS_Storehouse_Tests_Record extends WP_UnitTestCase {
 	protected $data = array(
 		'type' => array( 'sound', 'original', 'cultural' ),
-		'title' => array( 'Oral History', 'Audio' ),
+		'title' => 'Oral History',
 		'description' => array( 'Oral History Interview with Melinda Broman
 
 Melinda Broman, a White woman, was forty-seven years old when she was interviewed. Her husband Victor Ockey, who was a hemophiliac, died of acquired immune deficiency syndrome (AIDS) in 1989. He was infected with human immunodeficiency virus (HIV) during a routine blood transfusion in the early 1980s. At the time of this interview, Broman had lived in Brooklyn&apos;s Cobble Hill neighborhood since the mid-1980s. Broman&apos;s involvement with AIDS was extensive, reaching beyond her relationship with her husband. As a member of the National Hemophiliac Association she has lobbied for increased awareness of the specific plight of HIV+ hemophiliacs. Through her work as a psychologist at Downstate Medical Center and as a member of the Brooklyn Psychological Association she has organized AIDS workshops. She was interviewed primarily because of her personal and professional experience with AIDS issues specific to hemophiliacs.
@@ -15,19 +15,17 @@ The AIDS/Brooklyn Oral History Project collection includes oral histories conduc
 		'creator' => array( 'Melinda Broman' ),
 		'contributor' => array( 'Robert Sember' ),
 		'publisher' => array( 'Brooklyn Historical Society' ),
-		'date' => array( '1992/06/20' ),
-		'identifier' => array( '1993.001.01' ),
+		'date' => '1992/06/20',
+		'identifier' => '1993.001.01',
 		'language' => array( 'English' ),
 		'coverage' => array( '1992 - 1992' ),
 		'coverage' => array( 'Interview place:Brooklyn, New York, N.Y.' ),
-		'rights' => array( 'Access is available onsite at Brooklyn Historical Society&apos;s Othmer Library and the Oral History Portal. Use of oral histories other than for private study, scholarship, or research requires permission from BHS by contacting library@brooklynhistory.org.' ),
+		'rights' => 'Access is available onsite at Brooklyn Historical Society&apos;s Othmer Library and the Oral History Portal. Use of oral histories other than for private study, scholarship, or research requires permission from BHS by contacting library@brooklynhistory.org.',
 		'relation' => array(
 			'relation_findingaid' => array(
 				'http://example.com/findingaid.xml',
 			),
-			'relation_ohms' => array(
-				'OHMS link',
-			),
+			'relation_ohms' => 'OHMS link',
 			'relation_image' => array(
 				'dir\img1.jpg',
 				'dir\img2.jpg',
@@ -102,7 +100,7 @@ The AIDS/Brooklyn Oral History Project collection includes oral histories conduc
 
 		$post = get_post( $post_id );
 
-		$expected = sanitize_title( $this->data['identifier'][0] );
+		$expected = sanitize_title( $this->data['identifier'] );
 
 		$this->assertSame( $expected, $post->post_name );
 	}
@@ -133,7 +131,11 @@ The AIDS/Brooklyn Oral History Project collection includes oral histories conduc
 		$r2 = new BHS\Storehouse\Record( $post_id );
 
 		foreach ( $this->data as $k => $v ) {
-			$this->assertEqualSets( $v, $r2->get_dc_metadata( $k, false ) );
+			if ( is_array( $v ) ) {
+				$this->assertEqualSets( $v, $r2->get_dc_metadata( $k, false ) );
+			} else {
+				$this->assertSame( $v, $r2->get_dc_metadata( $k, false ) );
+			}
 		}
 	}
 

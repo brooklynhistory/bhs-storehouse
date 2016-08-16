@@ -15,6 +15,10 @@ class Record {
 		'rights', 'source', 'subject', 'title', 'type',
 	);
 
+	protected static $singular_elements = array(
+		'date', 'format', 'identifier', 'relation_ohms', 'rights', 'title',
+	);
+
 	protected $dc_metadata = array();
 
 	protected $asset_base = 'http://brooklynhistory.org/wordpress-assets/';
@@ -115,8 +119,13 @@ class Record {
 				delete_post_meta( $post_id, $meta_key );
 
 				// Note: 'subject' is being added here as well as in a taxonomy.
-				foreach ( $this->get_dc_metadata( $dc_key, false ) as $value ) {
-					add_post_meta( $post_id, $meta_key, $this->addslashes_deep( $value ) );
+				$f = $this->get_dc_metadata( $dc_key, false );
+				if ( is_array( $f ) ) {
+					foreach ( $f as $value ) {
+						add_post_meta( $post_id, $meta_key, $this->addslashes_deep( $value ) );
+					}
+				} else {
+					add_post_meta( $post_id, $meta_key, $this->addslashes_deep( $f ) );
 				}
 			}
 
@@ -165,13 +174,19 @@ class Record {
 		$this->post = $post;
 
 		foreach ( self::get_dc_elements() as $element ) {
-			$values = get_post_meta( $post_id, 'bhs_dc_' . $element );
+			$get_single = in_array( $element, self::get_singular_elements(), true );
+			$values = get_post_meta( $post_id, 'bhs_dc_' . $element, $get_single );
+
 			$this->dc_metadata[ $element ] = $values;
 		}
 	}
 
 	public static function get_dc_elements() {
 		return self::$dc_elements;
+	}
+
+	public static function get_singular_elements() {
+		return self::$singular_elements;
 	}
 
 	public function format_for_endpoint() {
