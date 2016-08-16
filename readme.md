@@ -2,7 +2,7 @@
 
 A WordPress plugin for managing and serving assets exported from PastPerfect.
 
-Built for the [brooklynhistory.org](Brooklyn Historical Society).
+Built for the [Brooklyn Historical Society](brooklynhistory.org).
 
 This plugin is currently under active development. Do not use on a production site.
 
