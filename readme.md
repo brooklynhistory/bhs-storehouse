@@ -14,5 +14,4 @@ Features:
 
 Requirements:
 
-* The WP-API plugin
 * PHP 5.3
