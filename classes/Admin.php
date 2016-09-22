@@ -9,6 +9,11 @@ namespace BHS\Storehouse;
  */
 class Admin {
 	/**
+	 * Name for top-level record element.
+	 */
+	protected $record_element = 'record';
+
+	/**
 	 * Register CSS and JS assets.
 	 *
 	 * @since 1.0.0
@@ -337,12 +342,12 @@ class Admin {
 		$doc = new \DOMDocument;
 
 		// Move to the first dc-record node.
-		while ( $x->read() && 'record' !== $x->name );
+		while ( $x->read() && $this->record_element !== $x->name );
 
 		$count = 0;
-		while ( 'record' === $x->name ) {
+		while ( $this->record_element === $x->name ) {
 			$count++;
-			$x->next( 'record' );
+			$x->next( $this->record_element );
 		}
 
 		$run_key = 'bhs_import_run_' . $timestamp;
@@ -383,13 +388,13 @@ class Admin {
 		$doc = new \DOMDocument;
 
 		// Move to the first dc-record node.
-		while ( $x->read() && 'dc-record' !== $x->name );
+		while ( $x->read() && $this->record_element !== $x->name );
 
 		$results = array();
 		$current = 0;
 		$increment = 5;
 
-		while ( 'dc-record' === $x->name ) {
+		while ( $this->record_element === $x->name ) {
 			if ( $current >= ( $last + $increment ) ) {
 				break;
 			}
@@ -397,7 +402,7 @@ class Admin {
 			$current++;
 
 			if ( $current <= $last ) {
-				$x->next( 'dc-record' );
+				$x->next( $this->record_element );
 				continue;
 			}
 
@@ -445,7 +450,7 @@ class Admin {
 
 			$results[] = $result;
 
-			$x->next( 'dc-record' );
+			$x->next( $this->record_element );
 		}
 
 		$run_data['last'] = $current;
