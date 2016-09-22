@@ -337,12 +337,12 @@ class Admin {
 		$doc = new \DOMDocument;
 
 		// Move to the first dc-record node.
-		while ( $x->read() && 'dc-record' !== $x->name );
+		while ( $x->read() && 'record' !== $x->name );
 
 		$count = 0;
-		while ( 'dc-record' === $x->name ) {
+		while ( 'record' === $x->name ) {
 			$count++;
-			$x->next( 'dc-record' );
+			$x->next( 'record' );
 		}
 
 		$run_key = 'bhs_import_run_' . $timestamp;
