@@ -284,14 +284,48 @@ class Record {
 		foreach ( self::get_dc_elements() as $dc_element ) {
 			$value = $this->get_dc_metadata( $dc_element, false );
 
-			if ( 'relation_image' === $dc_element ) {
-				$value = array_map( array( $this, 'convert_filename_to_asset_path' ), $value );
-			}
+			$value = $this->format_field_for_endpoint( $dc_element, $value );
 
 			$dc_metadata[ $dc_element ] = $value;
 		}
 
 		return $dc_metadata;
+	}
+
+	protected function format_field_for_endpoint( $element, $value ) {
+		switch ( $element ) {
+			case 'relation_findingaid' :
+				$value = $this->convert_findingaid_to_html( $value );
+			break;
+
+			case 'relation_image' :
+				$value = array_map( array( $this, 'convert_filename_to_asset_path' ) );
+			break;
+		}
+
+		return $value;
+	}
+
+	protected function convert_findingaid_to_html( $value ) {
+		$values = array_filter( $value );
+		if ( empty( $values ) ) {
+			return '';
+		}
+
+		$title = $this->get_dc_metadata( 'title_title', true );
+		if ( ! $title ) {
+			$title = $this->get_dc_metadata( 'title_collection', true );
+		}
+
+		if ( ! $title ) {
+			return '';
+		}
+
+		return sprintf(
+			'<a href="%s" target="_blank">%s</a>',
+			esc_url( reset( $values ) ),
+			esc_html( $title )
+		);
 	}
 
 	public function convert_filename_to_asset_path( $value ) {
