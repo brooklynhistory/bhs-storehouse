@@ -26,6 +26,12 @@ class Record {
 		'title_collection', 'title_title', 'title_accession',
 	);
 
+	protected static $taxonomy_elements = array(
+		'subject_subject' => 'bhssh_subject_subject',
+		'subject_people' => 'bhssh_subject_people',
+		'subject_places' => 'bhssh_subject_places',
+	);
+
 	protected $dc_metadata = array();
 
 	protected $asset_base = 'http://brooklynhistory.org/wordpress-assets/';
@@ -115,17 +121,21 @@ class Record {
 		}
 
 		if ( $post_id ) {
-			wp_set_object_terms( $post_id, $this->get_dc_metadata( 'subject_subject', false ), 'bhssh_subject_subject' );
-			wp_set_object_terms( $post_id, $this->get_dc_metadata( 'subject_people', false ), 'bhssh_subject_people' );
-			wp_set_object_terms( $post_id, $this->get_dc_metadata( 'subject_places', false ), 'bhssh_subject_places' );
+			foreach ( self::get_taxonomy_elements() as $element => $taxonomy ) {
+				wp_set_object_terms( $post_id, $this->get_dc_metadata( $element, false ), $taxonomy );
+			}
 
 			foreach ( $this->dc_metadata as $dc_key => $_ ) {
+				// Skip elements stored in taxonomy.
+				if ( self::get_element_taxonomy( $dc_key ) ) {
+					continue;
+				}
+
 				$meta_key = 'bhs_dc_' . $dc_key;
 
 				// Delete existing keys, in case of update.
 				delete_post_meta( $post_id, $meta_key );
 
-				// Note: 'subject' is being added here as well as in a taxonomy.
 				$f = $this->get_dc_metadata( $dc_key, false );
 				if ( is_array( $f ) ) {
 					foreach ( $f as $value ) {
@@ -181,8 +191,13 @@ class Record {
 		$this->post = $post;
 
 		foreach ( self::get_dc_elements() as $element ) {
-			$get_single = in_array( $element, self::get_singular_elements(), true );
-			$values = get_post_meta( $post_id, 'bhs_dc_' . $element, $get_single );
+			if ( $tax = self::get_element_taxonomy( $element ) ) {
+				$terms = get_the_terms( $post_id, $tax );
+				$values = is_array( $terms ) ? wp_list_pluck( $terms, 'name' ) : '';
+			} else {
+				$get_single = in_array( $element, self::get_singular_elements(), true );
+				$values = get_post_meta( $post_id, 'bhs_dc_' . $element, $get_single );
+			}
 
 			$this->dc_metadata[ $element ] = $values;
 		}
@@ -194,6 +209,28 @@ class Record {
 
 	public static function get_singular_elements() {
 		return self::$singular_elements;
+	}
+
+	public static function get_taxonomy_elements() {
+		return self::$taxonomy_elements;
+	}
+
+	/**
+	 * Get the taxonomy corresponding to an element.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $element Element name.
+	 * @return string|null Taxonomy name if found, else null.
+	 */
+	public static function get_element_taxonomy( $element ) {
+		$taxonomy_elements = self::get_taxonomy_elements();
+
+		if ( isset( $taxonomy_elements[ $element ] ) ) {
+			return $taxonomy_elements[ $element ];
+		} else {
+			return null;
+		}
 	}
 
 	public function format_for_endpoint() {
