@@ -34,7 +34,7 @@ class Record {
 
 	protected $dc_metadata = array();
 
-	protected $asset_base = 'http://brooklynhistory.org/wordpress-assets/';
+	protected $asset_base = 'http://brooklynhistory.org/library/assets/';
 
 	protected $post;
 
