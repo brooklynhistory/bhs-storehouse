@@ -49,6 +49,12 @@ class Record {
 		foreach ( $atts as $att_type => $att ) {
 			if ( in_array( $att_type, $dc_elements ) ) {
 				$att = $this->sanitize_raw_attribute( $att_type, $att );
+
+				// Skip empty fields.
+				if ( empty( $att ) ) {
+					continue;
+				}
+
 				$this->dc_metadata[ $att_type ] = $att;
 			}
 		}
@@ -76,7 +82,11 @@ class Record {
 					}
 					$clean[] = $value;
 				}
-				$values = $clean;
+				$values = array_filter( $clean );
+			break;
+
+			default :
+				$values = array_filter( $values );
 			break;
 		}
 
@@ -165,6 +175,12 @@ class Record {
 				delete_post_meta( $post_id, $meta_key );
 
 				$f = $this->get_dc_metadata( $dc_key, false );
+
+				// Don't save empty fields.
+				if ( empty( $f ) ) {
+					continue;
+				}
+
 				if ( is_array( $f ) ) {
 					foreach ( $f as $value ) {
 						add_post_meta( $post_id, $meta_key, $this->addslashes_deep( $value ) );
