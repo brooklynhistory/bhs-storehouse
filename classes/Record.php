@@ -48,11 +48,39 @@ class Record {
 		$dc_elements = self::get_dc_elements();
 		foreach ( $atts as $att_type => $att ) {
 			if ( in_array( $att_type, $dc_elements ) ) {
+				$att = $this->sanitize_raw_attribute( $att_type, $att );
 				$this->dc_metadata[ $att_type ] = $att;
 			}
 		}
 
 		return true;
+	}
+
+	/**
+	 * Sanitize raw attributes from XML source file.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $element Element name.
+	 * @param mixed  $values  Values.
+	 * @return mixed
+	 */
+	protected function sanitize_raw_attribute( $element, $values ) {
+		switch ( $element ) {
+			case 'relation_attachment' :
+				$clean = array();
+				foreach ( (array) $values as $value ) {
+					$extension = pathinfo( $value, PATHINFO_EXTENSION );
+					if ( 'jpg' === $extension || 'mp3' === $extension ) {
+						continue;
+					}
+					$clean[] = $value;
+				}
+				$values = $clean;
+			break;
+		}
+
+		return $values;
 	}
 
 	public function get_dc_metadata( $field, $single = true ) {

@@ -38,6 +38,8 @@ The AIDS/Brooklyn Oral History Project collection includes oral histories conduc
 		'relation_attachment' => array(
 			'foo.png',
 			'foo.pdf',
+			'foo.mp3',
+			'foo.jpg',
 		),
 	);
 
@@ -47,8 +49,21 @@ The AIDS/Brooklyn Oral History Project collection includes oral histories conduc
 		$this->assertTrue( $record->set_up_from_raw_atts( $this->data ) );
 
 		foreach ( $this->data as $k => $v ) {
+			if ( 'relation_attachment' === $k ) {
+				continue; // checked separately
+			}
 			$this->assertSame( $v, $record->get_dc_metadata( $k, false ) );
 		}
+	}
+
+	public function test_set_up_from_raw_atts_should_skip_relation_attachment_jpg_mp3() {
+		$record = new BHS\Storehouse\Record();
+
+		$this->assertTrue( $record->set_up_from_raw_atts( $this->data ) );
+
+		$found = $record->get_dc_metadata( 'relation_attachment', false );
+		$expected = array( 'foo.png', 'foo.pdf' );
+		$this->assertEqualSets( $expected, $found );
 	}
 
 	public function test_save_should_return_post_id() {
@@ -140,7 +155,10 @@ The AIDS/Brooklyn Oral History Project collection includes oral histories conduc
 
 		foreach ( $this->data as $k => $v ) {
 			if ( is_array( $v ) ) {
-				$this->assertEqualSets( $v, $r2->get_dc_metadata( $k, false ) );
+				// relation_attachment is sanitized. Should have a separate test at some point.
+				if ( 'relation_attachment' !== $k ) {
+					$this->assertEqualSets( $v, $r2->get_dc_metadata( $k, false ) );
+				}
 			} else {
 				$this->assertSame( $v, $r2->get_dc_metadata( $k, false ) );
 			}
