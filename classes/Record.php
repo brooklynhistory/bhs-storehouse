@@ -89,16 +89,18 @@ class Record {
 			);
 		}
 
-		// post_title is a combination of identifier + title.
-		if ( $this->get_dc_metadata( 'title' ) ) {
-			$post_data['post_title'] = sprintf(
-				'%s - %s',
-				$this->get_dc_metadata( 'identifier' ),
-				$this->get_dc_metadata( 'title' )
-			);
-		} else {
-			$post_data['post_title'] = $this->get_dc_metadata( 'identifier' );
+		// post_title is a combination of identifier + title_title + title_collection.
+		$title_parts = array( $this->get_dc_metadata( 'identifier' ) );
+
+		if ( $title_title = $this->get_dc_metadata( 'title_title' ) ) {
+			$title_parts[] = $title_title;
 		}
+
+		if ( $title_collection = $this->get_dc_metadata( 'title_collection' ) ) {
+			$title_parts[] = $title_collection;
+		}
+
+		$post_data['post_title'] = implode( ' - ', $title_parts );
 
 		// post_content is 'description'.
 		$post_data['post_content'] = $this->get_dc_metadata( 'description' );
