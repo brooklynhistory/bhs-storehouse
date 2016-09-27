@@ -9,14 +9,21 @@ namespace BHS\Storehouse;
  */
 class Record {
 	protected static $dc_elements = array(
-		'contributor', 'coverage', 'creator', 'date', 'description',
+		'contributor', 'coverage',
+		'creator', 'creator_alpha',
+		'date', 'description',
 		'format', 'identifier', 'language', 'publisher',
-		'relation_findingaid', 'relation_ohms', 'relation_image',
-		'rights', 'source', 'subject', 'title', 'type',
+		'relation_findingaid', 'relation_ohms', 'relation_image', 'relation_attachment',
+		'rights', 'right_request',
+		'source',
+		'subject_people', 'subject_subject', 'subject_places',
+		'title_collection', 'title_title', 'title_accession',
+		'type',
 	);
 
 	protected static $singular_elements = array(
-		'date', 'format', 'identifier', 'relation_ohms', 'rights', 'title',
+		'date', 'format', 'identifier', 'relation_ohms', 'rights', 'rights_request',
+		'title_collection', 'title_title', 'title_accession',
 	);
 
 	protected $dc_metadata = array();
@@ -36,10 +43,6 @@ class Record {
 		foreach ( $atts as $att_type => $att ) {
 			if ( in_array( $att_type, $dc_elements ) ) {
 				$this->dc_metadata[ $att_type ] = $att;
-			} elseif ( 'relation' === $att_type ) {
-				foreach ( $att as $subatt_key => $subatt_value ) {
-					$this->dc_metadata[ $subatt_key ] = $subatt_value;
-				}
 			}
 		}
 
@@ -191,21 +194,16 @@ class Record {
 
 	public function format_for_endpoint() {
 		$dc_metadata = array();
-		$relation_fields = array( 'relation_findingaid', 'relation_ohms', 'relation_image' );
 
 		// @todo Should some of these be flattened?
 		foreach ( self::get_dc_elements() as $dc_element ) {
 			$value = $this->get_dc_metadata( $dc_element, false );
 
-			if ( in_array( $dc_element, $relation_fields, true ) ) {
-				if ( 'relation_image' === $dc_element ) {
-					$value = array_map( array( $this, 'convert_filename_to_asset_path' ), $value );
-				}
-
-				$dc_metadata['relation'][ $dc_element ] = $value;
-			} else {
-				$dc_metadata[ $dc_element ] = $value;
+			if ( 'relation_image' === $dc_element ) {
+				$value = array_map( array( $this, 'convert_filename_to_asset_path' ), $value );
 			}
+
+			$dc_metadata[ $dc_element ] = $value;
 		}
 
 		return $dc_metadata;
