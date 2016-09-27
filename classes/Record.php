@@ -90,7 +90,18 @@ class Record {
 			break;
 		}
 
+		// Line breaks are encoded backwards. Wow.
+		$values = $this->convert_line_breaks( $values );
+
 		return $values;
+	}
+
+	protected function convert_line_breaks( $value ) {
+		if ( is_array( $value ) ) {
+			return array_map( array( $this, 'convert_line_breaks' ), $value );
+		} else {
+			return str_replace( '/n', "\n", $value );
+		}
 	}
 
 	public function get_dc_metadata( $field, $single = true ) {
@@ -299,7 +310,7 @@ class Record {
 			break;
 
 			case 'relation_image' :
-				$value = array_map( array( $this, 'convert_filename_to_asset_path' ) );
+				$value = array_map( array( $this, 'convert_filename_to_asset_path' ), $value );
 			break;
 		}
 
