@@ -14,7 +14,7 @@ class Record {
 		'date', 'description',
 		'format', 'identifier', 'language', 'publisher',
 		'relation_findingaid', 'relation_ohms', 'relation_image', 'relation_attachment',
-		'rights', 'right_request',
+		'rights', 'rights_request',
 		'source',
 		'subject_people', 'subject_subject', 'subject_places',
 		'title_collection', 'title_title', 'title_accession',
