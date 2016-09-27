@@ -49,12 +49,20 @@ class Schema {
 	/**
 	 * Register taxonomies.
 	 *
-	 * - bhssh_subject is 'dc:subject'.
+	 * - bhssh_subject_subject is <subject_subject>
+	 * - bhssh_subject_people is <subject_people>
+	 * - bhssh_subject_places is <subject_places>
 	 *
 	 * @since 1.0.0
 	 */
 	public function register_taxonomies() {
-		register_taxonomy( 'bhssh_subject', 'bhssh_record', array(
+		register_taxonomy( 'bhssh_subject_subject', 'bhssh_record', array(
+			'public' => false,
+		) );
+		register_taxonomy( 'bhssh_subject_people', 'bhssh_record', array(
+			'public' => false,
+		) );
+		register_taxonomy( 'bhssh_subject_places', 'bhssh_record', array(
 			'public' => false,
 		) );
 	}

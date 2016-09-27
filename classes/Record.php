@@ -115,7 +115,9 @@ class Record {
 		}
 
 		if ( $post_id ) {
-			wp_set_object_terms( $post_id, $this->get_dc_metadata( 'subject', false ), 'bhssh_subject' );
+			wp_set_object_terms( $post_id, $this->get_dc_metadata( 'subject_subject', false ), 'bhssh_subject_subject' );
+			wp_set_object_terms( $post_id, $this->get_dc_metadata( 'subject_people', false ), 'bhssh_subject_people' );
+			wp_set_object_terms( $post_id, $this->get_dc_metadata( 'subject_places', false ), 'bhssh_subject_places' );
 
 			foreach ( $this->dc_metadata as $dc_key => $_ ) {
 				$meta_key = 'bhs_dc_' . $dc_key;

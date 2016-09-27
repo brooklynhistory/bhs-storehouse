@@ -11,7 +11,9 @@ Melinda Broman, a White woman, was forty-seven years old when she was interviewe
 In the interview, Melinda Broman was able to provide a lot of information about what it was to be a heterosexual woman within a straight relationship dealing with HIV/AIDS. She speaks about the lack of support within the AIDS movement and also the lack of support from the hemophiliac community. While Broman found herself often surrounded by gay men within the AIDS movement, she made friends but was not always getting the support she needed. It was different within the hemophiliac community. She felt that fear of HIV/AIDS made the virus an unwanted topic of discussion. Melinda also speaks about being in a serodiscordant couple, the feelings she had about that, and how it related to her dealing with her own non-HIV-related health issues. Interview conducted by Robert Sember.
 
 The AIDS/Brooklyn Oral History Project collection includes oral histories conducted for an exhibition undertaken by the Brooklyn Historical Society in 1993. The project attempted to document the impact of the AIDS epidemic on Brooklyn communities. Recordings initially made on magnetic tape concerned the epidemic and were with narrators who had firsthand experience with the crisis in their communities, families and personal life. Narrators came from diverse backgrounds within Brookyn and the New York metropolitan area and had unique experiences which connected them with HIV/AIDS. Substantive topics of hemophilia, sexual behavior, substance abuse, medical practice, social work, homelessness, activism, childhood, relationships and parenting run through at least one, and often several, of the oral histories in the collection.' ),
-		'subject' => array( 'Audio', 'AIDS (Disease)', 'AIDS activists', 'Blood coagulation factors', 'Funeral rites and ceremonies', 'Hemophilia', 'Hemophiliacs', 'HIV infections', 'Immunological deficiency syndromes', 'Marriage customs and rites', 'Brooklyn (New York, N.Y.)', 'New York (N.Y.)', 'Melinda Broman' ),
+		'subject_subject' => array( 'Audio', 'AIDS (Disease)', 'AIDS activists', 'Blood coagulation factors', 'Funeral rites and ceremonies', 'Hemophilia', 'Hemophiliacs', 'HIV infections', 'Immunological deficiency syndromes', 'Marriage customs and rites' ),
+		'subject_places' => array( 'Brooklyn (New York, N.Y.)', 'New York (N.Y.)' ),
+		'subject_people' => array( 'Melinda Broman' ),
 		'creator' => array( 'Melinda Broman' ),
 		'contributor' => array( 'Robert Sember' ),
 		'publisher' => array( 'Brooklyn Historical Society' ),
@@ -113,13 +115,13 @@ The AIDS/Brooklyn Oral History Project collection includes oral histories conduc
 
 		$post = get_post( $post_id );
 
-		$found = wp_get_object_terms( $post_id, 'bhssh_subject' );
+		$found = wp_get_object_terms( $post_id, 'bhssh_subject_subject' );
 		$names = array();
 		foreach ( $found as $f ) {
 			$names[] = $f->name;
 		}
 
-		$this->assertEqualSets( $names, $this->data['subject'] );
+		$this->assertEqualSets( $names, $this->data['subject_subject'] );
 	}
 
 	public function test_save_should_store_dc_metadata() {
