@@ -252,7 +252,7 @@ class Record {
 
 	public function convert_filename_to_asset_path( $value ) {
 		$value = str_replace( '\\', '/', $value );
-		$value = trailingslashit( $this->asset_base ) . $value;
+		$value = trailingslashit( $this->asset_base ) . basename( $value );
 		return $value;
 	}
 
