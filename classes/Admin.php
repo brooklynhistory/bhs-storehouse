@@ -290,7 +290,7 @@ class Admin {
 						$value = esc_html( $value );
 					}
 
-					$values_formatted[] = '<p>' . $value . '</p>';
+					$values_formatted[] = wpautop( $value );
 				}
 			}
 
