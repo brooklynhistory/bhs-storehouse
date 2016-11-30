@@ -26,4 +26,4 @@ Upload PastPerfect export documents at Dashboard > PastPerfect Records > Import.
 
 Records are available at an API endpoint with the format `/wp-json/bhs/v1/record/[identifier]`. Be sure to flush your permalinks after activating the plugin, to ensure that the endpoint works (Dashboard > Settings > Permalinks > Save).
 
-There is a companion plugin that enables WordPress authors to access and display Storehouse data via shortcodes or template functions. See [bhs-client](https://github.com/boonebgorges/bhs-client).
+There is a companion plugin that enables WordPress authors to access and display Storehouse data via shortcodes or template functions. See [bhs-client](https://github.com/bhslibrary/bhs-client).
