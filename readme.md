@@ -14,7 +14,8 @@ Features:
 
 Requirements:
 
-* PHP 5.3
+* PHP 5.3+
+* WordPress 4.4+
 
 ## Use
 
