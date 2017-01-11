@@ -10,29 +10,29 @@ Features:
 
 * Import assets from PastPerfect/valid XML formats
 * Dublin Core data for each asset is stored in a way that is friendly to other WordPress plugins that expect metadata:
-	title_collection
-	title_title
-	title_accession
-	identifier
-	type
-	publisher
-	description
-	date
-	coverage
-	creator
-	contributor
-	format
-	rights
-	subject_people
-	subject_subject
-	subject_places
-	relation_ohms
-	relation_findingaid
-	rights_request
-	relation_image
-	relation_attachment
-	source
-	language
+	title_collection, 
+	title_title,
+	title_accession,
+	identifier,
+	type,
+	publisher,
+	description,
+	date,
+	coverage,
+	creator,
+	contributor,
+	format,
+	rights,
+	subject_people,
+	subject_subject,
+	subject_places,
+	relation_ohms,
+	relation_findingaid,
+	rights_request,
+	relation_image,
+	relation_attachment,
+	source,
+	language,
 	creator_alpha
 * Assets can be read from an external server via API endpoint
 
