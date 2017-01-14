@@ -312,6 +312,10 @@ class Record {
 			case 'relation_image' :
 				$value = array_map( array( $this, 'convert_filename_to_asset_path' ), $value );
 			break;
+
+			case 'relation_attachment' :
+				$value = array_map( array( $this, 'convert_attachment_path_to_url' ), $value );
+			break;
 		}
 
 		return $value;
@@ -337,6 +341,16 @@ class Record {
 			esc_url( reset( $values ) ),
 			esc_html( $title )
 		);
+	}
+
+	protected function convert_attachment_path_to_url( $value ) {
+		// basename() doesn't extract Windows paths on *nix.
+		preg_match( '|\\\?([^\\\]+)$|', $value, $matches );
+		$basename = '';
+		if ( $matches ) {
+			$basename = $matches[1];
+		}
+		return 'http://brooklynhistory.org/library/assets/' . $basename;
 	}
 
 	public function convert_filename_to_asset_path( $value ) {
