@@ -254,6 +254,13 @@ class Record {
 				$values = get_post_meta( $post_id, 'bhs_dc_' . $element, $get_single );
 			}
 
+			// Some fields must be formatted before being presented.
+			switch ( $element ) {
+				case 'relation_attachment' :
+					$values = array_map( array( $this, 'convert_attachment_path_to_url' ), $values );
+				break;
+			}
+
 			$this->dc_metadata[ $element ] = $values;
 		}
 	}
@@ -311,10 +318,6 @@ class Record {
 
 			case 'relation_image' :
 				$value = array_map( array( $this, 'convert_filename_to_asset_path' ), $value );
-			break;
-
-			case 'relation_attachment' :
-				$value = array_map( array( $this, 'convert_attachment_path_to_url' ), $value );
 			break;
 		}
 
