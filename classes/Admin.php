@@ -53,6 +53,49 @@ class Admin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_assets' ) );
 		add_action( 'wp_ajax_bhssh_import_upload', array( $this, 'process_ajax_submit' ) );
 		add_action( 'wp_ajax_bhssh_import_chunk', array( $this, 'process_ajax_chunk' ) );
+
+		// List table mods.
+		add_filter( 'manage_bhssh_record_posts_columns', array( $this, 'add_column' ) );
+		add_filter( 'manage_edit-bhssh_record_sortable_columns', array( $this, 'add_sortable_column' ) );
+		add_action( 'manage_bhssh_record_posts_custom_column', array( $this, 'custom_column_content' ), 10, 2 );
+	}
+
+	/**
+	 * Adds an 'updated' column to the list table.
+	 *
+	 * @param array $columns Column IDs and labels.
+	 * @return array
+	 */
+	public function add_column( $columns ) {
+		$columns['updated'] = 'Last Updated';
+		return $columns;
+	}
+
+	/**
+	 * Specifies that 'updated' is a sortable column.
+	 *
+	 * @param array $columns Array of sortable columns.
+	 * @return array
+	 */
+	public function add_sortable_column( $columns ) {
+		$columns['updated'] = 'modified';
+		return $columns;
+	}
+
+	/**
+	 * Specifies custom column content.
+	 *
+	 * @param string $column  Column ID.
+	 * @param int    $post_id ID of the current post.
+	 */
+	public function custom_column_content( $column, $post_id ) {
+		switch ( $column ) {
+			case 'updated' :
+				$post = get_post( $post_id );
+				$date = date( 'Y/m/d H:i:s', strtotime( $post->post_modified ) );
+				echo $date;
+			break;
+		}
 	}
 
 	/**
