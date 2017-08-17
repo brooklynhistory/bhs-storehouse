@@ -330,9 +330,9 @@ class Record {
 			return '';
 		}
 
-		$title = $this->get_dc_metadata( 'title_title', true );
+		$title = $this->get_dc_metadata( 'title_collection', true );
 		if ( ! $title ) {
-			$title = $this->get_dc_metadata( 'title_collection', true );
+			$title = $this->get_dc_metadata( 'title_title', true );
 		}
 
 		if ( ! $title ) {
