@@ -4,8 +4,6 @@ A WordPress plugin for managing and serving assets exported from PastPerfect Mus
 
 Built for the [Brooklyn Historical Society](http://brooklynhistory.org) by [Hard G](https://hardg.com).
 
-This plugin is currently under active development. Do not use on a production site.
-
 Features:
 
 * Import assets from PastPerfect/valid XML formats
