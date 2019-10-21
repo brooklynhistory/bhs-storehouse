@@ -8,7 +8,7 @@ Features:
 
 * Import assets from PastPerfect/valid XML formats
 * Dublin Core data for each asset is stored in a way that is friendly to other WordPress plugins that expect metadata:
-	title_collection, 
+	title_collection,
 	title_title,
 	title_accession,
 	identifier,
@@ -17,9 +17,12 @@ Features:
 	description,
 	date,
 	coverage,
+	coverage_GIS,
 	creator,
 	contributor,
 	format,
+	format_scale,
+	format_size,
 	rights,
 	subject_people,
 	subject_subject,

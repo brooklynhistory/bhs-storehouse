@@ -9,10 +9,10 @@ namespace BHS\Storehouse;
  */
 class Record {
 	protected static $dc_elements = array(
-		'contributor', 'coverage',
+		'contributor', 'coverage', 'coverage_GIS',
 		'creator', 'creator_alpha',
 		'date', 'description',
-		'format', 'identifier', 'language', 'publisher',
+		'format', 'format_scale', 'format_size', 'identifier', 'language', 'publisher',
 		'relation_findingaid', 'relation_ohms', 'relation_image', 'relation_attachment',
 		'rights', 'rights_request',
 		'source',
@@ -22,7 +22,8 @@ class Record {
 	);
 
 	protected static $singular_elements = array(
-		'date', 'format', 'identifier', 'relation_ohms', 'rights', 'rights_request',
+		'coverage_GIS', 'date', 'format', 'format_scale', 'format_size',
+		'identifier', 'relation_ohms', 'rights', 'rights_request',
 		'title_collection', 'title_title', 'title_accession',
 	);
 
