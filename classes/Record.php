@@ -35,7 +35,7 @@ class Record {
 
 	protected $dc_metadata = array();
 
-	protected $asset_base = 'http://brooklynhistory.org/library/assets/';
+	protected $asset_base = 'https://s3.amazonaws.com/bhs.assets/';
 
 	protected $post;
 
@@ -354,7 +354,7 @@ class Record {
 		if ( $matches ) {
 			$basename = $matches[1];
 		}
-		return 'http://brooklynhistory.org/library/assets/' . $basename;
+		return $this->asset_base . $basename;
 	}
 
 	public function convert_filename_to_asset_path( $value ) {
