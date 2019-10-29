@@ -342,7 +342,7 @@ class Record {
 
 		return sprintf(
 			'<a href="%s" target="_blank">%s</a>',
-			esc_url( reset( $values ) ),
+			esc_url_raw( reset( $values ) ),
 			esc_html( $title )
 		);
 	}
