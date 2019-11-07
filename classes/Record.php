@@ -296,14 +296,19 @@ class Record {
 		}
 	}
 
-	public function format_for_endpoint() {
+	/**
+	 * Formats a record for use in an endpoint.
+	 *
+	 * @param int $version Endpoint version number.
+	 */
+	public function format_for_endpoint( $version ) {
 		$dc_metadata = array();
 
 		// @todo Should some of these be flattened?
 		foreach ( self::get_dc_elements() as $dc_element ) {
 			$value = $this->get_dc_metadata( $dc_element, false );
 
-			$value = $this->format_field_for_endpoint( $dc_element, $value );
+			$value = $this->format_field_for_endpoint( $dc_element, $value, $version );
 
 			$dc_metadata[ $dc_element ] = $value;
 		}
@@ -311,10 +316,25 @@ class Record {
 		return $dc_metadata;
 	}
 
-	protected function format_field_for_endpoint( $element, $value ) {
+	/**
+	 * Formats a specific field for use in an endpoint.
+	 *
+	 * @param string $element Element name (Dublin Core field name).
+	 * @param string $value   Raw value.
+	 * @param int    $version API endpoint version.
+	 */
+	protected function format_field_for_endpoint( $element, $value, $version ) {
 		switch ( $element ) {
 			case 'relation_findingaid' :
-				$value = $this->convert_findingaid_to_html( $value );
+				switch ( $version ) {
+					case 1 :
+						$value = $this->convert_findingaid_to_html( $value );
+					break;
+
+					case 2 :
+						$value = reset( $value );
+					break;
+				}
 			break;
 
 			case 'relation_image' :

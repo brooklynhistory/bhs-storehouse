@@ -1,6 +1,8 @@
 <?php
 
-namespace BHS\Storehouse;
+namespace BHS\Storehouse\Endpoints\V1;
+
+use BHS\Storehouse\Record;
 
 /**
  * REST API endpoint.
@@ -59,7 +61,7 @@ class Endpoint {
 
 		$record = new Record( $record_id );
 
-		$retval = $record->format_for_endpoint();
+		$retval = $record->format_for_endpoint( 1 );
 
 		$response = rest_ensure_response( $retval );
 		$response->set_status( 200 );
