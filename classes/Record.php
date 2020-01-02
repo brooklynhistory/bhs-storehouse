@@ -340,6 +340,11 @@ class Record {
 			case 'relation_image' :
 				$value = array_map( array( $this, 'convert_filename_to_asset_path' ), $value );
 			break;
+
+			case 'coverage_GIS' :
+				$values = explode( ';', $value );
+				$value  = array_map( 'trim', $values );
+			break;
 		}
 
 		return $value;
