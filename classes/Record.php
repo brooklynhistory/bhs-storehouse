@@ -16,7 +16,7 @@ class Record {
 		'relation_findingaid', 'relation_ohms', 'relation_image', 'relation_attachment',
 		'rights', 'rights_request',
 		'source',
-		'subject_people', 'subject_subject', 'subject_places',
+		'subject_genre', 'subject_people', 'subject_subject', 'subject_places',
 		'title_collection', 'title_title', 'title_accession',
 		'type',
 	);
@@ -28,9 +28,10 @@ class Record {
 	);
 
 	protected static $taxonomy_elements = array(
+		'subject_genre'   => 'bhssh_subject_genre',
 		'subject_subject' => 'bhssh_subject_subject',
-		'subject_people' => 'bhssh_subject_people',
-		'subject_places' => 'bhssh_subject_places',
+		'subject_people'  => 'bhssh_subject_people',
+		'subject_places'  => 'bhssh_subject_places',
 	);
 
 	protected $dc_metadata = array();

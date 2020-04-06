@@ -65,5 +65,8 @@ class Schema {
 		register_taxonomy( 'bhssh_subject_places', 'bhssh_record', array(
 			'public' => false,
 		) );
+		register_taxonomy( 'bhssh_subject_genre', 'bhssh_record', array(
+			'public' => false,
+		) );
 	}
 }
