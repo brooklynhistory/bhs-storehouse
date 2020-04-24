@@ -87,6 +87,17 @@ class Record {
 				$values = array_filter( $clean );
 			break;
 
+			case 'subject_genre' :
+				$all_values = [];
+				foreach ( $values as $value ) {
+					$_values    = explode( ';', $value );
+					$all_values = array_merge( $_values, $all_values );
+				}
+
+				$values = array_map( 'trim', $all_values );
+				$values = array_filter( $values );
+			break;
+
 			default :
 				$values = array_filter( $values );
 			break;
