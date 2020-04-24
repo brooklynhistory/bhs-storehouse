@@ -12,7 +12,8 @@ class Record {
 		'contributor', 'coverage', 'coverage_GIS',
 		'creator', 'creator_alpha',
 		'date', 'description',
-		'format', 'format_scale', 'format_size', 'identifier', 'language', 'publisher',
+		'format', 'format_scale', 'format_size', 'identifier', 'identifier_callnumber',
+		'language', 'publisher',
 		'relation_findingaid', 'relation_ohms', 'relation_image', 'relation_attachment',
 		'rights', 'rights_request',
 		'source',
@@ -23,7 +24,7 @@ class Record {
 
 	protected static $singular_elements = array(
 		'coverage_GIS', 'date', 'format', 'format_scale', 'format_size',
-		'identifier', 'relation_ohms', 'rights', 'rights_request',
+		'identifier', 'identifier_callnumber', 'relation_ohms', 'rights', 'rights_request',
 		'title_collection', 'title_title', 'title_accession',
 	);
 
